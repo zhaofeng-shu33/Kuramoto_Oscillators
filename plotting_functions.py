@@ -37,7 +37,7 @@ def plot_time_evolution(sol, t, Omega, ax):
     nf = np.size(sol, 0)
     for i in range(nf):
         ax.plot(t, sol[i, :], label="f %d" % (i))
-    ax.plot(t, (Phi(t) % (2 * np.pi)), linewidth=2, color="r", label="driver")
+    # ax.plot(t, (Phi(t) % (2 * np.pi)), linewidth=2, color="r", label="driver")
     ax.legend(loc="upper right", prop={"size": 7})
     ax.set_xlabel("t")
     ax.set_ylabel(r"$\theta$")

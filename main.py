@@ -41,7 +41,7 @@ def main():
     no_runs = 1  # number of times the simulation is run (used where applicable)
 
     # load network of oscillators
-    G = load_line_network(5)
+    G = load_2cluster_network()
 
     # G = nx.gnp_random_graph(5, 0.6)
     # A = nx.adjacency_matrix(G).todense()
@@ -61,22 +61,22 @@ def main():
     # B = np.linspace(10, 20, nf)
     # B = np.random.uniform(10, 20, size=nf)
     # B = np.random.uniform(0, 5, size=nf)
-    B = np.array([7, 0, 0, 0, 0])
+    B = np.zeros(nf)
     # B = [1.00465019, 1.4795114, 3.92223887, 3.99427941, 4.8777141, 2.59484127, 3.6070913, 4.51140533, 3.38070504, 3.65192458]
 
     # solve the system and plot the time evolution and the corresponding correlation values
     sol, corr_vals = solve_system(t, w, A, B, Phi, True)
-    plot_time_corr(G, sol, corr_vals, Omega, t)
+    # plot_time_corr(G, sol, corr_vals, Omega, t)
 
     phi = compute_phase_diffs(sol, t, Omega)
 
     # Omega_vec = np.array([0.3, 0.5, 1.3, 1.7, 2.0])
     # Omega_vec = np.linspace(0.2, 0.8, 20)
-    Omega_vec = [2.9, 3.05, 3.1, 3.2]
-    Arec, Brec = reconstruct_coeffs_mask(t, Omega_vec, w, A, B)
-    compute_reconstruction_error(A, B, Arec, Brec)
+    # Omega_vec = [2.9, 3.05, 3.1, 3.2]
+    # Arec, Brec = reconstruct_coeffs_mask(t, Omega_vec, w, A, B)
+    # compute_reconstruction_error(A, B, Arec, Brec)
 
-    bundle = DictWrapper({"orig_A": A, "orig_B": B, "rec_A": Arec, "rec_B": Brec})
+    # bundle = DictWrapper({"orig_A": A, "orig_B": B, "rec_A": Arec, "rec_B": Brec})
 
     # show_reconstruction_overview(sol, bundle)
 
