@@ -8,7 +8,7 @@ from tqdm import trange
 from plotting_functions import *
 from network_generator import *
 from reconstruction import *
-from visualization import *
+# from visualization import *
 
 
 class DictWrapper(dict):
@@ -78,7 +78,7 @@ def main():
 
     bundle = DictWrapper({"orig_A": A, "orig_B": B, "rec_A": Arec, "rec_B": Brec})
 
-    show_reconstruction_overview(sol, bundle)
+    # show_reconstruction_overview(sol, bundle)
 
     plt.figure()
     gs = mpl.gridspec.GridSpec(1, 1)
