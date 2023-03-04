@@ -57,9 +57,7 @@ def get_phase_value(G, order=0.99):
         current_order = calculate_local_sync_order(_phases, G)
         results = odeint(f, _phases, np.arange(t, t + step, step))
         _phases = results[-1] % (2 * np.pi)
-        # calculate_phases(_phases, time_counter, step, int_step)
         t += step
-    print(t)
     return _phases
 
 def allocate_sync_ensembles(last_state, tolerance=0.01):
@@ -109,6 +107,6 @@ def kuramoto_detection(G, k=None, method='kmeans'):
         phases_ = ((phases - np.mean(phases)) / np.std(phases))
         labels = list(cluster.k_means(phases_.reshape(-1, 1), n_clusters=k)[1])
     else:
-        tolerance = np.std(phases) / 2
+        tolerance = np.std(phases)
         labels = allocate_sync_ensembles(phases, tolerance)
     return labels
