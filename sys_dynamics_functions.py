@@ -53,12 +53,62 @@ def get_phase_value(G, order=0.99):
     current_order = 0.0
     t = 0
     step = 0.1
-    int_step = 0.01
     while current_order < order:
         current_order = calculate_local_sync_order(_phases, G)
-        results = odeint(f, _phases, np.arange(t, t + step, int_step))
+        results = odeint(f, _phases, np.arange(t, t + step, step))
         _phases = results[-1] % (2 * np.pi)
         # calculate_phases(_phases, time_counter, step, int_step)
         t += step
     print(t)
     return _phases
+
+def allocate_sync_ensembles(last_state, tolerance=0.01):
+    """!
+    @brief Allocate clusters in line with ensembles of synchronous oscillators where each synchronous ensemble corresponds to only one cluster.
+            
+    @param[in] tolerance (double): Maximum error for allocation of synchronous ensemble oscillators.
+    @param[in] indexes (list): List of real object indexes and it should be equal to amount of oscillators (in case of 'None' - indexes are in range [0; amount_oscillators]).
+    @param[in] iteration (uint): Iteration of simulation that should be used for allocation.
+    
+    @return (list) Groups (lists) of indexes of synchronous oscillators.
+            For example [ [index_osc1, index_osc3], [index_osc2], [index_osc4, index_osc5] ].
+    
+    """
+    number_oscillators = len(last_state)
+    clusters = [[0]]
+
+    for i in range(1, number_oscillators, 1):
+        cluster_allocated = False
+        for cluster in clusters:
+            for neuron_index in cluster:
+                last_state_shifted = abs(last_state[i] - 2 * np.pi)
+
+                if ( ( (last_state[i] < (last_state[neuron_index] + tolerance)) and (last_state[i] > (last_state[neuron_index] - tolerance)) ) or
+                        ( (last_state_shifted < (last_state[neuron_index] + tolerance)) and (last_state_shifted > (last_state[neuron_index] - tolerance)) ) ):
+                    cluster_allocated = True
+
+                    real_index = i
+                    cluster.append(real_index)
+                    break
+
+            if cluster_allocated is True:
+                break
+
+        if cluster_allocated is False:
+            clusters.append([i])
+    labels = [0] * number_oscillators
+    for index, cluster in enumerate(clusters):
+        for i in cluster:
+            labels[i] = index
+    return labels
+
+def kuramoto_detection(G, k=None, method='kmeans'):
+    phases = get_phase_value(G)
+    if method == 'kmeans' and k is not None:
+        from sklearn import cluster
+        phases_ = ((phases - np.mean(phases)) / np.std(phases))
+        labels = list(cluster.k_means(phases_.reshape(-1, 1), n_clusters=k)[1])
+    else:
+        tolerance = np.std(phases) / 2
+        labels = allocate_sync_ensembles(phases, tolerance)
+    return labels
